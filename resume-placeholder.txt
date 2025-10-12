@@ -1,0 +1,10 @@
+# Resume Placeholder
+
+This is a placeholder file for your resume. Replace this file with your actual resume PDF.
+
+To update:
+1. Save your resume as "resume.pdf"
+2. Place it in the root directory of your portfolio
+3. The link in your portfolio will automatically work
+
+The resume link is already included in your portfolio at the bottom of the projects section.
