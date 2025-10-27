@@ -48,10 +48,13 @@ navigationLinks.forEach(link => {
 const form = document.querySelector('[data-form]');
 const formInputs = document.querySelectorAll('[data-form-input]');
 const formBtn = document.querySelector('[data-form-btn]');
+const formStatus = document.getElementById('form-status');
 
 // Form validation and submission
 if (form) {
-    form.addEventListener('submit', function (e) {
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        
         // Basic form validation
         let isValid = true;
         
@@ -77,14 +80,55 @@ if (form) {
         }
         
         if (!isValid) {
-            e.preventDefault();
-            showNotification('Please fill in all fields correctly.', 'error');
-        } else {
-            // Allow form to submit to Formspree
-            formBtn.textContent = 'Sending...';
-            formBtn.disabled = true;
+            showFormStatus('Please fill in all fields correctly.', 'error');
+            return;
+        }
+        
+        // Submit form via AJAX
+        formBtn.innerHTML = '<span>Sending...</span>';
+        formBtn.disabled = true;
+        
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                showFormStatus('✓ Message sent successfully! I\'ll get back to you soon.', 'success');
+                form.reset();
+                formInputs.forEach(input => {
+                    input.style.borderColor = '#383838';
+                });
+            } else {
+                showFormStatus('Oops! There was a problem sending your message. Please try again.', 'error');
+            }
+        } catch (error) {
+            showFormStatus('Oops! There was a problem sending your message. Please try again.', 'error');
+        } finally {
+            formBtn.innerHTML = '<span>Send Message</span>';
+            formBtn.disabled = false;
         }
     });
+}
+
+// Show form status message
+function showFormStatus(message, type) {
+    if (formStatus) {
+        const statusMessage = formStatus.querySelector('.status-message');
+        statusMessage.textContent = message;
+        formStatus.className = 'form-status ' + type;
+        formStatus.style.display = 'block';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            formStatus.style.display = 'none';
+        }, 5000);
+    }
 }
 
 // Notification system
