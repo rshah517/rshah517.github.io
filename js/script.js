@@ -52,15 +52,11 @@ const formBtn = document.querySelector('[data-form-btn]');
 // Form validation and submission
 if (form) {
     form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        
         // Basic form validation
         let isValid = true;
-        const formData = {};
         
         formInputs.forEach(input => {
             const value = input.value.trim();
-            formData[input.name] = value;
             
             if (!value) {
                 isValid = false;
@@ -80,19 +76,13 @@ if (form) {
             }
         }
         
-        if (isValid) {
-            // Simulate form submission
+        if (!isValid) {
+            e.preventDefault();
+            showNotification('Please fill in all fields correctly.', 'error');
+        } else {
+            // Allow form to submit to Formspree
             formBtn.textContent = 'Sending...';
             formBtn.disabled = true;
-            
-            setTimeout(() => {
-                showNotification('Message sent successfully!', 'success');
-                form.reset();
-                formBtn.textContent = 'Send Message';
-                formBtn.disabled = false;
-            }, 1500);
-        } else {
-            showNotification('Please fill in all fields correctly.', 'error');
         }
     });
 }
